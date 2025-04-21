@@ -135,3 +135,31 @@ But it is important to use it responsibly and ethically. Here are some guideline
 9. Document your scraping process thoroughly for replicability, transparency and accountability.
 
 10. Continuously re-evaluate your scraping program against applicable laws and ethical principles.
+
+## 🛠️ Scraper Modification Summary
+
+### 🔄 What Was Changed
+
+The original scraper was designed to extract the **main headline** from the [Daily Pennsylvanian](https://www.thedp.com) homepage by targeting the first `<a>` element with the class `frontpage-link`. While this worked, the headline was often generic or not the most engaging content.
+
+I modified the scraper to instead extract the **#1 most-read article** from the “Most Read” section. This change ensures the scraper returns a headline that reflects what readers are currently most interested in.
+
+### 🧠 Why This Approach?
+
+- **More interesting data**: Most-read articles tend to be more relevant, popular, or engaging than the default top headline.
+- **Stable HTML structure**: The “Most Read” section uses a consistent structure (`<div class="most-read">`) that is easier to target reliably.
+- **Deeper DOM traversal**: This approach required navigating nested HTML elements, which is a valuable and realistic scraping technique.
+
+### 🔐 Respecting `robots.txt`
+The robots.txt file showed that scraping is allowed for all user agents (except SemrushBot), as long as requests are spaced at least **10 seconds apart**. To comply, I added a `time.sleep(10)` delay before each request.
+
+### ✅ Result
+
+The updated scraper now:
+
+- Locates the `div` with class `most-read`
+- Extracts the text of the **first** `<a>` link within it
+- Logs and returns the headline
+- Delays for 10 seconds between each request to respect crawl rules
+
+This improves both the quality of the data retrieved and demonstrates thoughtful, ethical scraping.
