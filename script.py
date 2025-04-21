@@ -33,15 +33,14 @@ def scrape_data_point():
 
     if req.ok:
         soup = bs4.BeautifulSoup(req.text, "html.parser")
-        most_read_container = soup.find("span", id="mostRead")
-        if not most_read_container:
+        most_read_span = soup.find("span", id="mostRead")
+        if not most_read_span:
             logger.warning("Most Read span not found.")
             return ""
         most_read_items = most_read_span.find_all("div", class_="col-sm-5 most-read-item")
         if not most_read_items:
             logger.warning("No Most Read items found.")
             return ""
-
         first_item = most_read_items[0]
         link_tag = first_item.find("a", class_="frontpage-link standard-link")
         if not link_tag:
