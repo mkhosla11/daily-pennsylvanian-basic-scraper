@@ -21,7 +21,7 @@ def scrape_data_point():
         str: The headline text if found, otherwise an empty string.
     """
     headers = {
-    "User-Agent": "cis3500-scraper"
+    "User-Agent": "cis3500-scraper-11"
     }
     
     req = requests.get("https://www.thedp.com", headers=headers)
