@@ -18,38 +18,30 @@ from loguru import logger
 
 def scrape_data_point():
     """
-    Scrapes the #1 most read article title from The Daily Pennsylvanian homepage.
+    Scrapes the headline of the #1 most read article from The Daily Pennsylvanian homepage.
 
     Returns:
-        str: The headline text if found, otherwise an empty string.
+        str: The headline text of the most read article if found, otherwise an empty string.
     """
-    # Respect the crawl-delay of 10 seconds
-    time.sleep(10)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+    }
 
-    url = "https://www.thedp.com"
-    try:
-        response = requests.get(url, timeout=10)
-        logger.info(f"Request URL: {response.url}")
-        logger.info(f"Request status code: {response.status_code}")
+    req = requests.get("https://www.thedp.com", headers=headers)
+    loguru.logger.info(f"Request URL: {req.url}")
+    loguru.logger.info(f"Request status code: {req.status_code}")
 
-        if response.ok:
-            soup = BeautifulSoup(response.text, "html.parser")
-            # Select the first link in the Most Read section
-            most_read_section = soup.find("div", class_="most-read")
-            if most_read_section:
-                first_article = most_read_section.find("a")
-                if first_article:
-                    data_point = first_article.get_text(strip=True)
-                    logger.info(f"Data point: {data_point}")
-                    return data_point
-            logger.warning("Most Read section or first article not found.")
-        else:
-            logger.error(f"Failed to fetch the page. Status code: {response.status_code}")
-    except requests.RequestException as e:
-        logger.error(f"An error occurred: {e}")
-
-    return ""
-
+    if req.ok:
+        soup = bs4.BeautifulSoup(req.text, "html.parser")
+        # Look for the #1 most read story
+        most_read_section = soup.find("div", class_="most-read")
+        target_element = most_read_section.find("a") if most_read_section else None
+        data_point = "" if target_element is None else target_element.text.strip()
+        loguru.logger.info(f"Data point: {data_point}")
+        return data_point
+    else:
+        loguru.logger.error(f"Failed to fetch the page. Status code: {req.status_code}")
+        return ""
 
 if __name__ == "__main__":
 
