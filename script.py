@@ -11,29 +11,44 @@ import daily_event_monitor
 import bs4
 import requests
 import loguru
+import time
+from bs4 import BeautifulSoup
+from loguru import logger
 
 
 def scrape_data_point():
     """
-    Scrapes the main headline from The Daily Pennsylvanian home page.
+    Scrapes the #1 most read article title from The Daily Pennsylvanian homepage.
 
     Returns:
         str: The headline text if found, otherwise an empty string.
     """
-    headers = {
-    "User-Agent": "cis3500-scraper-11"
-    }
-    
-    req = requests.get("https://www.thedp.com", headers=headers)
-    loguru.logger.info(f"Request URL: {req.url}")
-    loguru.logger.info(f"Request status code: {req.status_code}")
+    # Respect the crawl-delay of 10 seconds
+    time.sleep(10)
 
-    if req.ok:
-        soup = bs4.BeautifulSoup(req.text, "html.parser")
-        target_element = soup.find("a", class_="frontpage-link")
-        data_point = "" if target_element is None else target_element.text
-        loguru.logger.info(f"Data point: {data_point}")
-        return data_point
+    url = "https://www.thedp.com"
+    try:
+        response = requests.get(url, timeout=10)
+        logger.info(f"Request URL: {response.url}")
+        logger.info(f"Request status code: {response.status_code}")
+
+        if response.ok:
+            soup = BeautifulSoup(response.text, "html.parser")
+            # Select the first link in the Most Read section
+            most_read_section = soup.find("div", class_="most-read")
+            if most_read_section:
+                first_article = most_read_section.find("a")
+                if first_article:
+                    data_point = first_article.get_text(strip=True)
+                    logger.info(f"Data point: {data_point}")
+                    return data_point
+            logger.warning("Most Read section or first article not found.")
+        else:
+            logger.error(f"Failed to fetch the page. Status code: {response.status_code}")
+    except requests.RequestException as e:
+        logger.error(f"An error occurred: {e}")
+
+    return ""
 
 
 if __name__ == "__main__":
