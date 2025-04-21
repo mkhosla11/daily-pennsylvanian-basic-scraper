@@ -27,13 +27,13 @@ def scrape_data_point():
     "User-Agent": "cis3500-scraper-11"
     }
     
-    req = requests.get("https://www.thedp.com", headers=headers)
+    req = requests.get("https://www.thedp.com/multimedia", headers=headers)
     loguru.logger.info(f"Request URL: {req.url}")
     loguru.logger.info(f"Request status code: {req.status_code}")
 
     if req.ok:
         soup = bs4.BeautifulSoup(req.text, "html.parser")
-        target_element = soup.find("a", class_="frontpage-link")
+        target_element = soup.find("a", class_="medium-link")
         data_point = "" if target_element is None else target_element.text
         loguru.logger.info(f"Data point: {data_point}")
         return data_point
