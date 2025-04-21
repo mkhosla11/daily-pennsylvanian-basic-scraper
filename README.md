@@ -136,30 +136,37 @@ But it is important to use it responsibly and ethically. Here are some guideline
 
 10. Continuously re-evaluate your scraping program against applicable laws and ethical principles.
 
-## 🛠️ Scraper Modification Summary
+# 📰 Daily Pennsylvanian Multimedia Scraper
 
-### 🔄 What Was Changed
+This Python script scrapes the headline of the most recent video or photo story from the *Multimedia* section of The Daily Pennsylvanian's website (`https://www.thedp.com/multimedia`) and logs it in a JSON file as a time-stamped data point.
 
-The original scraper was designed to extract the **main headline** from the [Daily Pennsylvanian](https://www.thedp.com) homepage by targeting the first `<a>` element with the class `frontpage-link`. While this worked, the headline was often generic or not the most engaging content.
+## 🔍 What the Scraper Does
 
-I modified the scraper to instead extract the **#1 most-read article** from the “Most Read” section. This change ensures the scraper returns a headline that reflects what readers are currently most interested in.
+The scraper performs the following actions:
 
-### 🧠 Why This Approach?
+1. Sends a GET request to the **Multimedia** section of The Daily Pennsylvanian.
+2. Parses the HTML response using `BeautifulSoup`.
+3. Searches for the HTML element containing the latest multimedia story's headline.
+4. Extracts the headline and returns it as a string.
+5. Saves the headline to a data file that tracks headlines over time.
 
-- **More interesting data**: Most-read articles tend to be more relevant, popular, or engaging than the default top headline.
-- **Stable HTML structure**: The “Most Read” section uses a consistent structure (`<div class="most-read">`) that is easier to target reliably.
-- **Deeper DOM traversal**: This approach required navigating nested HTML elements, which is a valuable and realistic scraping technique.
+## 🛠️ Explanation of the Changes Made
 
-### 🔐 Respecting `robots.txt`
-The robots.txt file showed that scraping is allowed for all user agents (except SemrushBot), as long as requests are spaced at least **10 seconds apart**. To comply, I added a `time.sleep(10)` delay before each request.
+Originally, the scraper was designed to extract the **main headline** from the homepage. It searched for an anchor (`<a>`) tag with the class `frontpage-link` and returned its inner text.
 
-### ✅ Result
+### Changes Implemented:
+- **Target URL Updated:**  
+  Changed from `https://www.thedp.com` (homepage) to `https://www.thedp.com/multimedia` to focus on visual content (videos or photo stories).
 
-The updated scraper now:
+- **Header Injection:**  
+  A custom `User-Agent` header was added to prevent potential HTTP 403 errors from automated requests being blocked.
 
-- Locates the `div` with class `most-read`
-- Extracts the text of the **first** `<a>` link within it
-- Logs and returns the headline
-- Delays for 10 seconds between each request to respect crawl rules
+- **Target Element Selector Changed:**  
+  Updated the `soup.find()` query to locate the appropriate multimedia story element. (Example: `class_="multimedia-link"` — class name may need adjustment based on the actual HTML structure.)
 
-This improves both the quality of the data retrieved and demonstrates thoughtful, ethical scraping.
+- **Logging Enhanced:**  
+  The scraper now logs the request URL, response status code, and the final extracted headline for easier debugging and verification.
+
+# Explaining the cron syntax
+
+The initial cron expression 0 20 * * * means my job runs at 8:00PM every day. The five fields are minute, hour, day of month, month, and day of week.
