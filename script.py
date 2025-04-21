@@ -35,7 +35,7 @@ def scrape_data_point():
         soup = bs4.BeautifulSoup(req.text, "html.parser")
         most_read_section = soup.find("span", id="mostRead")
         if most_read_section:
-            target_element = soup.find("a", class_="frontpage-link standard-link")
+            target_element = most_read_section.find("a", class_="frontpage-link standard-link")
             data_point = "" if target_element is None else target_element.text
             loguru.logger.info(f"Data point: {data_point}")
             return data_point
