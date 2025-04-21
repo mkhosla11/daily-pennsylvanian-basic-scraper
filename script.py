@@ -37,21 +37,20 @@ def scrape_data_point():
         if not most_read_container:
             logger.warning("Most Read span not found.")
             return ""
-
-        # Now look inside for the first `div` with class "col-sm-5 most-read-item"
-        most_read_item = most_read_container.find("div", class_="col-sm-5 most-read-item")
-        if not most_read_item:
-            logger.warning("Most Read item not found.")
+        most_read_items = most_read_span.find_all("div", class_="col-sm-5 most-read-item")
+        if not most_read_items:
+            logger.warning("No Most Read items found.")
             return ""
 
-        link = most_read_item.find("a", class_="frontpage-link standard-link")
-        if not link:
-            logger.warning("Link not found in Most Read item.")
+        first_item = most_read_items[0]
+        link_tag = first_item.find("a", class_="frontpage-link standard-link")
+        if not link_tag:
+            logger.warning("Link not found in first Most Read item.")
             return ""
 
-        headline = link.text.strip()
+        headline = link_tag.text.strip()
         logger.info(f"Scraped headline: {headline}")
-        return headline
+        return headline 
 
     return ""
 
